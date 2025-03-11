@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time GPS Tracker</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6753J_fU7XVssZiz4b-Dk_hQqDjzouMs"></script>
+    <style>
+        #map { height: 500px; width: 100%; }
+    </style>
+</head>
+<body>
+    <h2>Real-Time GPS Tracker</h2>
+    <div id="map"></div>
+
+    <script>
+        //  Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD6753J_fU7XVssZiz4b-Dk_hQqDjzouMs",
+            authDomain: "petpulse-31f91.firebaseapp.com",
+            databaseURL: "https://petpulse-31f91-default-rtdb.firebaseio.com",
+            projectId: "petpulse-31f91",
+            storageBucket: "petpulse-31f91.firebasestorage.app",
+            messagingSenderId: "211975871959",
+            appId: "1:211975871959:web:cc5f660a924c6f4706bf92"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Initialize Google Maps
+        let map;
+        let marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: { lat: 0, lng: 0 }
+            });
+
+            marker = new google.maps.Marker({
+                position: { lat: 0, lng: 0 },
+                map: map,
+                title: "Current Location"
+            });
+
+            updateLocation();
+        }
+
+        // Fetch GPS Data from Firebase
+        function updateLocation() {
+            const gpsRef = database.ref("GPS");
+            gpsRef.on("value", (snapshot) => {
+                if (!snapshot.exists()) return;
+                const data = snapshot.val();
+                if (data.Latitude && data.Longitude) {
+                    const lat = parseFloat(data.Latitude);
+                    const lng = parseFloat(data.Longitude);
+                    console.log(`Updated Location: ${lat}, ${lng}`);
+
+                    marker.setPosition({ lat, lng });
+                    map.setCenter({ lat, lng });
+                }
+            });
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
