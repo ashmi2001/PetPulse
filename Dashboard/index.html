@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PetPulse Dashboard</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+  <!-- Google Maps -->
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiW07DVil-H7A-kPYhKbyM8vyP6iTmi1w&callback=initMap"></script>
+
+  <!-- Dashboard JS -->
+  <script src="dashboard.js" defer></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1598136490430-b3e274ed63b0?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.88);
+      margin: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: row;
+      height: calc(100vh - 40px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .sidebar {
+      width: 400px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .scroll-section {
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .history-scroll {
+      max-height: 200px;
+      overflow-y: scroll;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f7f9fc;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2 {
+      color: #2c3e50;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      flex-grow: 1;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    li:hover {
+      background-color: #eef3f8;
+      cursor: pointer;
+      border-radius: 4px;
+      padding-left: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h1>🐾 PetPulse</h1>
+      <div class="scroll-section">
+        <div class="section">
+          <h2>Latest GPS</h2>
+          <div id="gpsData">Loading...</div>
+        </div>
+
+        <div class="section">
+          <h2>Past 7 Days Location History</h2>
+          <div class="history-scroll" id="history">Loading...</div>
+        </div>
+
+        <div class="section">
+          <h2>Anomalies</h2>
+          <div id="anomalies">Loading...</div>
+        </div>
+
+        <div class="section">
+          <h2>Emergency</h2>
+          <div id="contacts">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <h2>Pet Location Map</h2>
+      <div id="map">Loading map...</div>
+    </div>
+  </div>
+</body>
+</html>
