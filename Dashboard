@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PetPulse Realtime Dashboard</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      background: #f0f4f8 url('https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+      background-size: cover;
+      padding: 30px;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+    }
+    h1 {
+      color: #222;
+      text-align: center;
+    }
+    body.dark-mode h1 {
+      color: #f0f0f0;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    .section {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: background-color 0.3s;
+    }
+    body.dark-mode .section {
+      background: rgba(34, 34, 34, 0.9);
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #555;
+    }
+    body.dark-mode .section h2 {
+      color: #f0f0f0;
+    }
+    .img-preview {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    .battery {
+      font-weight: bold;
+      color: #2a9d8f;
+    }
+    .ai-detect {
+      font-style: italic;
+      color: #e76f51;
+    }
+    .filters {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .filters button {
+      margin: 0 5px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ccc;
+      cursor: pointer;
+    }
+    .filters button:hover {
+      background-color: #bbb;
+    }
+    #toggleTheme {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="toggleTheme">Toggle Theme</button>
+  <h1>🐶 PetPulse Realtime Dashboard</h1>
+  <div class="filters">
+    <button onclick="filterData(7)">Past 7 Days</button>
+    <button onclick="filterData(14)">Past 2 Weeks</button>
+    <button onclick="filterData(30)">Past 1 Month</button>
+  </div>
+  <div class="dashboard">
+    <div class="section">
+      <h2>📍 Location & Time</h2>
+      <div id="location"></div>
+    </div>
+    <div class="section">
+      <h2>📸 Camera Visual</h2>
+      <div id="camera"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiW07DVil-H7A-kPYhKbyM8vyP6iTmi1w",
+      authDomain: "petpulse17.firebaseapp.com",
+      projectId: "petpulse17",
+      storageBucket: "petpulse17.appspot.com",
+      messagingSenderId: "1015263179162",
+      appId: "1:1015263179162:web:4e075b1f6cfc1079ab8a23"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const locationDiv = document.getElementById("location");
+    const cameraDiv = document.getElementById("camera");
+    const toggleBtn = document.getElementById("toggleTheme");
+
+    let daysToFilter = 7;
+
+    function filterData(days) {
+      daysToFilter = days;
+      fetchData();
+    }
+
+    function fetchData() {
+      const q = query(collection(db, "pet_locations"), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snapshot) => {
+        locationDiv.innerHTML = "";
+        cameraDiv.innerHTML = "";
+
+        const now = new Date();
+
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          const timestamp = new Date(d.timestamp?.seconds * 1000);
+          const timeDiff = (now - timestamp) / (1000 * 60 * 60 * 24);
+
+          if (timeDiff <= daysToFilter) {
+            const locHtml = `
+              <div class="entry">
+                <p><strong>Latitude:</strong> ${d.latitude}</p>
+                <p><strong>Longitude:</strong> ${d.longitude}</p>
+                <p><strong>Time:</strong> ${timestamp.toLocaleString()}</p>
+              </div>
+            `;
+
+            const camHtml = `
+              <div class="entry">
+                <img src="${d.imageUrl}" class="img-preview" />
+                <p><strong>Battery:</strong> <span class="battery">${d.batteryLevel || "N/A"}</span></p>
+                <p><strong>AI Detected:</strong> <span class="ai-detect">${d.aiLabel || "None"}</span></p>
+              </div>
+            `;
+
+            locationDiv.innerHTML += locHtml;
+            cameraDiv.innerHTML += camHtml;
+          }
+        });
+      });
+    }
+
+    fetchData();
+
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+  </script>
+</body>
+</html>
