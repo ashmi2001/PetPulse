@@ -1,43 +1,49 @@
-import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
-import { useEffect, useState } from 'react';
 
-const mapContainerStyle = {
+import React, { useEffect, useState } from 'react';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { db } from '../firebase';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+
+const containerStyle = {
   width: '100vw',
   height: '100vh',
 };
 
-const center = {
-  lat: 40.7128,
-  lng: -74.0060,
-};
-
 export default function MapDashboard() {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyDP2vPp_dmDcCPLbPCHA47i7A5oGblvSKo" // Replace with your key
+    googleMapsApiKey: 'AIzaSyDP2vPp_dmDcCPLbPCHA47i7A5oGblvSKo',
   });
 
-  const [location, setLocation] = useState(center);
+  const [location, setLocation] = useState({ lat: 0, lng: 0 });
 
   useEffect(() => {
-    const watchId = navigator.geolocation.watchPosition((pos) => {
-      setLocation({
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      });
+    const q = query(collection(db, 'GPSData'), orderBy('timestamp', 'desc'), limit(1));
+    const unsub = onSnapshot(q, (snapshot) => {
+      const latest = snapshot.docs[0]?.data();
+      if (latest) {
+        setLocation({ lat: latest.latitude, lng: latest.longitude });
+      }
     });
 
-    return () => navigator.geolocation.clearWatch(watchId);
+    return () => unsub();
   }, []);
 
-  if (!isLoaded) return <div className="text-white text-center mt-10">Loading Map...</div>;
+  if (!isLoaded) return <div className="p-10 text-center text-gray-500">Loading map...</div>;
 
   return (
     <GoogleMap
-      mapContainerStyle={mapContainerStyle}
-      zoom={15}
+      mapContainerStyle={containerStyle}
       center={location}
+      zoom={16}
+      mapTypeId="satellite"
     >
-      <Marker position={location} icon="/logo.png" />
+      <Marker
+        position={location}
+        icon={{
+          url: '/paw-logo.jpg',
+          scaledSize: new window.google.maps.Size(50, 50),
+        }}
+      />
     </GoogleMap>
   );
 }

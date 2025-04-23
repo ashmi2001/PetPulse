@@ -1,19 +1,21 @@
+// src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Your actual Firebase config here
+// ✅ Your Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyBFMDoh2sCyTspTt4ek6_lQn8VZJ3xUYes",
-  authDomain: "pet-pulse-81b82.firebaseapp.com",
-  projectId: "pet-pulse-81b82",
-  storageBucket: "pet-pulse-81b82.firebasestorage.app",
-  messagingSenderId: "814817094642",
-  appId: "1:814817094642:web:6103d8f6de0aa908a0d96b",
-  measurementId: "G-SJQRWMN48B"
+  apiKey: "AIzaSyAiW07DVil-H7A-kPYhKbyM8vyP6iTmi1w",
+  authDomain: "petpulse17.firebaseapp.com",
+  projectId: "petpulse17",
+  storageBucket: "petpulse17.appspot.com",
+  messagingSenderId: "1015263179162",
+  appId: "1:1015263179162:web:4e075b1f6cfc1079ab8a23",
 };
 
-// Initialize Firebase
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app); // <-- Add this
 
-// ✅ Export auth
-export const auth = getAuth(app);
+export { auth, db }; // ✅ Export both
