@@ -2,20 +2,12 @@ import React, { useState } from 'react';
 import { FiLogIn, FiUserPlus } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '../firebase';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore'; // ✅ import Firestore
 
 export default function PetPulseLogin() {
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({
     clientName: '',
-    petName: '',
     email: '',
-    phone: '',
     password: '',
   });
   const navigate = useNavigate();
@@ -26,37 +18,51 @@ export default function PetPulseLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password, clientName, petName, phone } = formData;
+    const { email, password, clientName } = formData;
 
     try {
       if (isSignup) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        if (user) {
-          // ✅ Save user details in Firestore under "Clients" collection
-          await setDoc(doc(db, "Clients", user.uid), {
-            clientName,
-            petName,
-            phone,
-            email,
-            createdAt: new Date().toISOString(),
-          });
-          alert("Signup successful!");
-          navigate("/home");
+        // 🔥 Call your backend for Registration
+        const response = await fetch('http://localhost:5000/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: clientName, email, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert('Signup successful! Now please login.');
+          setIsSignup(false); // Switch to login
+        } else {
+          alert(data.message || 'Signup failed');
         }
       } else {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        if (user) navigate("/home"); // ✅ redirect on login
+        // 🔥 Call your backend for Login
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          // Store token if needed
+          localStorage.setItem('token', data.token);
+          alert('Login successful!');
+          navigate('/home'); // Redirect to home
+        } else {
+          alert(data.message || 'Login failed');
+        }
       }
     } catch (err) {
-      alert(err.message);
+      console.error(err);
+      alert('Something went wrong!');
     }
   };
 
   return (
     <div className="relative w-screen h-screen flex items-center justify-center font-sans overflow-hidden">
-      {/* Background blobs and patterns */}
+      {/* Background */}
       <div
         className="absolute inset-0 z-[-3]"
         style={{
@@ -75,7 +81,7 @@ export default function PetPulseLogin() {
         <div className="absolute bottom-[-4rem] left-1/4 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Main Card */}
+      {/* Main Form */}
       <div className="relative z-10 w-full max-w-md px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -83,7 +89,6 @@ export default function PetPulseLogin() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
           className="bg-white/40 backdrop-blur-2xl shadow-[0_1px_6px_rgba(255,255,255,0.6)] rounded-3xl px-8 py-10 border border-white/30"
         >
-          {/* Title */}
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -93,7 +98,6 @@ export default function PetPulseLogin() {
             Pet Pulse <span className="text-2xl mt-1">🐾</span>
           </motion.h1>
 
-          {/* Subtitle */}
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-1">
             {isSignup ? 'Create Account' : 'Welcome Back'}
           </h2>
@@ -113,35 +117,15 @@ export default function PetPulseLogin() {
               className="flex flex-col gap-4 bg-white/60 p-6 rounded-xl shadow-md"
             >
               {isSignup && (
-                <>
-                  <input
-                    type="text"
-                    name="clientName"
-                    placeholder="Client Name"
-                    value={formData.clientName}
-                    onChange={handleChange}
-                    required
-                    className="px-4 py-3 rounded-xl border border-white/30 bg-white text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
-                  />
-                  <input
-                    type="text"
-                    name="petName"
-                    placeholder="Pet's Name"
-                    value={formData.petName}
-                    onChange={handleChange}
-                    required
-                    className="px-4 py-3 rounded-xl border border-white/30 bg-white text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
-                  />
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone Number"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    className="px-4 py-3 rounded-xl border border-white/30 bg-white text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
-                  />
-                </>
+                <input
+                  type="text"
+                  name="clientName"
+                  placeholder="Client Name"
+                  value={formData.clientName}
+                  onChange={handleChange}
+                  required
+                  className="px-4 py-3 rounded-xl border border-white/30 bg-white text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                />
               )}
               <input
                 type="email"
@@ -161,6 +145,7 @@ export default function PetPulseLogin() {
                 required
                 className="px-4 py-3 rounded-xl border border-white/30 bg-white text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-400"
               />
+
               <button
                 type="submit"
                 className="mt-3 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 hover:from-pink-500 hover:to-indigo-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-pink-300/50 transition-all duration-300"
@@ -171,7 +156,7 @@ export default function PetPulseLogin() {
             </motion.form>
           </AnimatePresence>
 
-          {/* Toggle Signup/Login */}
+          {/* Switch Login/Signup */}
           <div className="mt-6 text-sm text-gray-800 text-center">
             {isSignup ? 'Already have an account?' : 'New to Pet Pulse?'}{' '}
             <button
@@ -184,7 +169,7 @@ export default function PetPulseLogin() {
         </motion.div>
       </div>
 
-      {/* Animated blob CSS */}
+      {/* Animated Blob CSS */}
       <style>{`
         .animate-blob {
           animation: blob 7s infinite;

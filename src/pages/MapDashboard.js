@@ -11,7 +11,7 @@ const containerStyle = {
 
 export default function MapDashboard() {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyDP2vPp_dmDcCPLbPCHA47i7A5oGblvSKo',
+    googleMapsApiKey: 'AIzaSyAiW07DVil-H7A-kPYhKbyM8vyP6iTmi1w',
   });
 
   const [location, setLocation] = useState({ lat: 0, lng: 0 });

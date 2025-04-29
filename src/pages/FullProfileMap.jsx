@@ -1,4 +1,5 @@
-// src/pages/FullProfileMap.jsx
+
+// Full profile with owner, pet, and daily goal
 import React, { useEffect, useState } from 'react';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import { db } from '../firebase';
@@ -7,7 +8,7 @@ import Navbar from '../components/Navbar';
 
 export default function FullProfileMap() {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyDP2vPp_dmDcCPLbPCHA47i7A5oGblvSKo',
+    googleMapsApiKey: 'AIzaSyAiW07DVil-H7A-kPYhKbyM8vyP6iTmi1w',
   });
 
   const [owner, setOwner] = useState({});
@@ -40,7 +41,6 @@ export default function FullProfileMap() {
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <div className="p-6 md:p-10 grid md:grid-cols-2 gap-10 mt-20">
-        {/* Owner and Pet Info */}
         <div>
           <h2 className="text-3xl font-bold text-pink-600 mb-4">👤 Owner & Pet Profile</h2>
           <div className="bg-white p-6 rounded-xl shadow-md">
@@ -52,11 +52,10 @@ export default function FullProfileMap() {
             <h3 className="text-xl font-semibold mt-6 mb-2">Pet</h3>
             <p><strong>Pet ID:</strong> {pet.id}</p>
             <p><strong>Device ID:</strong> {pet.device}</p>
-            <p><strong>Location:</strong> {location.lat}, {location.lng}</p>
+            <p><strong>Daily Goal:</strong> 10,000 steps</p>
           </div>
         </div>
 
-        {/* Google Map */}
         <div className="h-[500px] w-full rounded-xl overflow-hidden shadow-lg">
           <GoogleMap
             mapContainerStyle={{ width: '100%', height: '100%' }}
