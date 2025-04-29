@@ -1,9 +1,6 @@
 import google.generativeai as genai
-from dog_health import get_health_advice
-from anomaly_detector import detect_anomalies
-from firebase_integration import get_dog_data
 
-GEMINI_API_KEY = 'AIzaSyDBPo51gmdYtxlzHKGYIclwq5_H7r4Mb_o'  # replace this!
+GEMINI_API_KEY = 'AIzaSyDBPo51gmdYtxlzHKGYIclwq5_H7r4Mb_o'  # Replace with your actual key!
 
 class DogChatbot:
     def __init__(self):
@@ -31,18 +28,11 @@ class DogChatbot:
                 print("Chatbot: Thank you for chatting with me! Goodbye! 🐶")
                 break
 
-            # Custom logic for dog health and anomaly detection
-            if "health" in user_input:
-                advice = get_health_advice(user_input)
-                print(f"Chatbot: {advice}")
-            elif "anomaly" in user_input:
-                anomaly = detect_anomalies()
-                print(f"Chatbot: {anomaly}")
-            else:
-                response = self.get_response(user_input)
-                print(f"Chatbot: {response}")
+            # Handle chatbot response
+            response = self.get_response(user_input)
+            print(f"Chatbot: {response}")
 
-# Run the chatbot
+# Main execution
 if __name__ == "__main__":
-    chatbot = DogChatbot()
-    chatbot.start_chat()
+    chatbot = DogChatbot()  # Create chatbot object
+    chatbot.start_chat()  # Start the chatbot interaction
