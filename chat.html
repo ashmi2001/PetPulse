@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk to Dogbot 🐶</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2em;
+        }
+
+        .chatbox {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .chatbox input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .chatbox button {
+            padding: 10px 20px;
+            background-color: #ff7f50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8e8e8;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .response h3 {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Talk to Dogbot 🐶</h1>
+
+        <div class="chatbox">
+            <h2>Ask Dogbot a Question</h2>
+            <!-- Form to send the user input to the backend -->
+            <form action="/chat" method="POST">
+                <input type="text" name="user_input" placeholder="Ask something..." required>
+                <button type="submit">Send</button>
+            </form>
+
+            <!-- If response is available, display it -->
+            {% if response %}
+            <div class="response">
+                <h3>Response:</h3>
+                <p>{{ response }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>
